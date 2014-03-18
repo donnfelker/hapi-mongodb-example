@@ -1,0 +1,18 @@
+{
+  "name": "analytics-engine",
+  "version": "0.0.1",
+  "description": "A simple example of how to build a very rudamentary API with NodeJS and MongoDB",
+  "main": "server.js",
+  "dependencies": {
+    "hapi": "3.0.0",
+    "mongoose": "~3.8.7"
+  },
+  "keywords": [
+    "hapi",
+    "mongo",
+    "mongoose",
+    "analytics"
+  ],
+  "author": "Donn Felker",
+  "license": "MIT"
+}
