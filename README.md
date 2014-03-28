@@ -1,0 +1,1 @@
+# Example Hapi.js & MongoDB Example
