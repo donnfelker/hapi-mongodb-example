@@ -1,8 +1,8 @@
 
 var Hapi 		= require('hapi');
-var server 	= new Hapi.Server('localhost', 8000);
-var routes 	= require('./routes');
-var Mongoose = require('mongoose');
+var server 	    = new Hapi.Server('localhost', 8000);
+var routes 	    = require('./routes');
+var Mongoose    = require('mongoose');
 
 // MongoDB Connection
 Mongoose.connect('mongodb://localhost/felkerlytics');

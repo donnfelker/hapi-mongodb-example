@@ -1,23 +1,30 @@
-var Boom = require('boom');                  // HTTP Errors
-var Joi = require('joi');                   // Validation
-var Event = require('../models/event').Event; // Mongoose ODM
+var Boom    = require('boom');                                  // HTTP Errors
+var Joi     = require('joi');                                   // Validation
+var AnalyticEvent   = require('../models/event').AnalyticEvent; // Mongoose ODM
 
+// Exports = exports? Huh? Read: http://stackoverflow.com/a/7142924/5210
 module.exports = exports = function (server) {
 
     console.log('Loading events routes');
     exports.index(server);
-    exports.new(server);
+    exports.create(server);
     exports.show(server);
-    exports.delete(server);
-}
+    exports.remove(server);
+};
 
+/**
+ * GET /events
+ * Gets all the events from MongoDb and returns them.
+ *
+ * @param server - The Hapi Server
+ */
 exports.index = function (server) {
     // GET /events
     server.route({
         method: 'GET',
         path: '/events',
         handler: function (request, reply) {
-            Event.find({}, function (err, events) {
+            AnalyticEvent.find({}, function (err, events) {
                 if (!err) {
                     reply(events);
                 } else {
@@ -34,7 +41,7 @@ exports.index = function (server) {
  *
  * @param server - The Hapi Serve
  */
-exports.new = function (server) {
+exports.create = function (server) {
     // POST /events
     var event;
 
@@ -43,7 +50,7 @@ exports.new = function (server) {
         path: '/events',
         handler: function (request, reply) {
 
-            event = new Event();
+            event = new AnalyticEvent();
             event.category = request.payload.category;
             event.action = request.payload.action;
             event.label = request.payload.label;
@@ -53,14 +60,19 @@ exports.new = function (server) {
                 if (!err) {
                     reply(event).created('/events/' + event._id);    // HTTP 201
                 } else {
-                    ;
                     reply(Boom.forbidden(getErrorMessageFrom(err))); // HTTP 403
                 }
             });
         }
     });
-}
+};
 
+/**
+ * GET /events/{id}
+ * Gets the event based upon the {id} parameter.
+ *
+ * @param server
+ */
 exports.show = function (server) {
 
     server.route({
@@ -74,11 +86,11 @@ exports.show = function (server) {
             }
         },
         handler: function (request, reply) {
-            Event.findById(request.params.id, function (err, event) {
+            AnalyticEvent.findById(request.params.id, function (err, event) {
                 if (!err && event) {
                     reply(event);
                 } else if (err) {
-                    // Log it, but dont show the user, don't want to expose ourselves (think security)
+                    // Log it, but don't show the user, don't want to expose ourselves (think security)
                     console.log(err);
                     reply(Boom.notFound());
                 } else {
@@ -88,9 +100,15 @@ exports.show = function (server) {
             });
         }
     })
-}
+};
 
-exports.delete = function (server) {
+/**
+ * DELETE /events/{id}
+ * Deletes an event, based on the event id in the path.
+ *
+ * @param server - The Hapi Server
+ */
+exports.remove = function (server) {
     server.route({
         method: 'DELETE',
         path: '/events/{id}',
@@ -102,7 +120,7 @@ exports.delete = function (server) {
             }
         },
         handler: function (request, reply) {
-            Event.findById(request.params.id, function(err, event) {
+            AnalyticEvent.findById(request.params.id, function(err, event) {
                 if(!err && event) {
                     event.remove();
                     reply({ message: "Event deleted successfully"});
@@ -118,13 +136,20 @@ exports.delete = function (server) {
     })
 };
 
+/**
+ * Formats an error message that is returned from Mongoose.
+ *
+ * @param err The error object
+ * @returns {string} The error message string.
+ */
 function getErrorMessageFrom(err) {
     var errorMessage = '';
-    var i;
 
     if (err.errors) {
         for (var prop in err.errors) {
-            errorMessage += err.errors[prop].message + ' '
+            if(err.errors.hasOwnProperty(prop)) {
+                errorMessage += err.errors[prop].message + ' '
+            }
         }
 
     } else {
