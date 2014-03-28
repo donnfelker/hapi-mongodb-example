@@ -1,6 +1,6 @@
 var Boom    = require('boom');                                  // HTTP Errors
 var Joi     = require('joi');                                   // Validation
-var AnalyticEvent   = require('../models/event').AnalyticEvent; // Mongoose ODM
+var AnalyticEvent   = require('../models/analyticEvent').AnalyticEvent; // Mongoose ODM
 
 // Exports = exports? Huh? Read: http://stackoverflow.com/a/7142924/5210
 module.exports = exports = function (server) {
